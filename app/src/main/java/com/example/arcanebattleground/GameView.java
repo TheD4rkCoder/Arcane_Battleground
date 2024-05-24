@@ -102,10 +102,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         float y = event.getY();
         if (event.getAction() == MotionEvent.ACTION_DOWN) { // MotionEvent has all the possible actions (if you need it to be only on drag or smth)
             // do smth
-            if (event.getY() < boardBitmap.getHeight() - 0.28 * hexagonHeight && event.getY() > hexagonHeight * 0.28)
-            testPlayer.setY((int) ((event.getY() - 0.15f * hexagonHeight) / hexagonHeight));
-            testPlayer.setX((int) ((event.getX() - hexagonWidth * ((testPlayer.getY() % 2 == 0) ? 0f : 0.5f)) / hexagonWidth));
-
+            if (event.getY() < boardBitmap.getHeight() - 0.28 * hexagonHeight && event.getY() > hexagonHeight * 0.28) {
+                testPlayer.setY((int) ((event.getY() - 0.15f * hexagonHeight) / hexagonHeight));
+                testPlayer.setX((int) ((event.getX() - hexagonWidth * ((testPlayer.getY() % 2 == 0) ? 0f : 0.5f)) / hexagonWidth));
+            }
 
             //circlesToDraw.add(new CustomCircle(x/screenWidth, y/screenHeight, 0.05f));
         }
