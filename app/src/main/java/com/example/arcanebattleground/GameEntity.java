@@ -12,6 +12,7 @@ public abstract class GameEntity {
     private int currentSprite = 0;
     protected int health;
     protected int maxHealth;
+    private Player linkedPlayer;
     public GameEntity(Bitmap[] animationSprites) {
         this.animationSprites = animationSprites;
     }
@@ -21,7 +22,17 @@ public abstract class GameEntity {
     }
     public void drawEntityDescription(Canvas c, float startY, float height) {
         GameView.paintForTexts.setColor(Color.RED);
-        c.drawText("" + health + "/" + maxHealth, GameView.screenWidth * 0.7f, startY + GameView.paintForTexts.getTextSize(), GameView.paintForTexts);
+        c.drawText("" + health + "/" + maxHealth, GameView.screenWidth * 0.5f, startY + GameView.paintForTexts.getTextSize(), GameView.paintForTexts);
+        c.drawBitmap(Bitmap.createScaledBitmap(linkedPlayer.getIconBitmap(),(int) (height * 0.8f),(int) (height * 0.8f), false), GameView.screenWidth * 0.6f, startY + height * 0.1f, GameView.paintForBitmaps);
+    }
+    public Bitmap getIconBitmap() {
+        return animationSprites[0];
+    }
+    public Player getLinkedPlayer() {
+        return linkedPlayer;
+    }
+    public void setLinkedPlayer(Player p) {
+        linkedPlayer = p;
     }
     public boolean tapEntityDescription() {
         return false;

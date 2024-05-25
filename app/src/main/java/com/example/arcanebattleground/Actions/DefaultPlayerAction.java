@@ -13,17 +13,21 @@ import com.example.arcanebattleground.Player;
 
 import java.util.ArrayList;
 
-public class DefaultPlayerAction extends Action{
+public class DefaultPlayerAction extends Action {
 
     private ArrayList<Spell[]> spells = new ArrayList<>();
+
     public DefaultPlayerAction() {
         radius = 1;
         Spell[] tier1Spells = new Spell[4];
         tier1Spells[0] = new Tier1FireSparks();
+        tier1Spells[1] = new Tier1Wind();
         spells.add(tier1Spells);
     }
+
     @Override
     public boolean boardTap(int x, int y, GameEntity e) {
+        // walk
         Player p = (Player) e;
         if (getDistance(p.getX(), x, p.getY(), y) == 0) {
             int mana = p.getMana();
@@ -31,11 +35,13 @@ public class DefaultPlayerAction extends Action{
             if (mana > p.getMaxMana())
                 mana = p.getMaxMana();
             p.setMana(mana);
+            p.setRoundsCast(0);
             return true;
         }
         if (getDistance(p.getX(), x, p.getY(), y) <= radius) {
             p.setX(x);
             p.setY(y);
+            p.setRoundsCast(0);
             return true;
         }
         return false;
@@ -43,29 +49,47 @@ public class DefaultPlayerAction extends Action{
 
     @Override
     public boolean descriptionTap(float x, GameEntity e) {
+        Player p = (Player) e;
+        if (p.getRoundsCast() >= spells.size()) {
+            return false;
+        }
+
         if (x < 0.25f * screenWidth) {
+            if (spells.get(p.getRoundsCast())[0] != null && spells.get(p.getRoundsCast())[0].manaCost <= p.getMana())
+                GameView.currentAction = spells.get(p.getRoundsCast())[0];
         } else if (x < 0.5f * screenWidth) {
+            if (spells.get(p.getRoundsCast())[1] != null && spells.get(p.getRoundsCast())[1].manaCost <= p.getMana())
+                GameView.currentAction = spells.get(p.getRoundsCast())[1];
         } else if (x < 0.75f * screenWidth) {
+            if (spells.get(p.getRoundsCast())[2] != null && spells.get(p.getRoundsCast())[2].manaCost <= p.getMana())
+                GameView.currentAction = spells.get(p.getRoundsCast())[2];
         } else {
+            if (spells.get(p.getRoundsCast())[3] != null && spells.get(p.getRoundsCast())[3].manaCost <= p.getMana())
+                GameView.currentAction = spells.get(p.getRoundsCast())[3];
         }
         return false;
     }
 
     @Override
     public void drawDescription(Canvas c, int startY, int height, GameEntity e) {
+        Player p = (Player) e;
+        if (p.getRoundsCast() >= spells.size())
+            return;
         GameView.paintForShapes.setColor(Color.GRAY);
         c.drawRect(0.02f * screenWidth, startY + 0.02f * screenWidth, 0.245f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
         c.drawRect(0.265f * screenWidth, startY + 0.02f * screenWidth, 0.49f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
         c.drawRect(0.51f * screenWidth, startY + 0.02f * screenWidth, 0.735f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
         c.drawRect(0.755f * screenWidth, startY + 0.02f * screenWidth, 0.98f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
-        Player p = (Player) e;
-        if (p.getRoundsCast() < spells.size()) {
-            Spell[] spellsOfCurrentTier = spells.get(p.getRoundsCast());
-            for (int i = 0; i < spellsOfCurrentTier.length; i++) {
-                if (spellsOfCurrentTier[i] == null)
-                    continue;
-                c.drawBitmap(spellsOfCurrentTier[i].icon, (0.02f + 22.5f * i) * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
-            }
+
+        Spell[] spellsOfCurrentTier = spells.get(p.getRoundsCast());
+        for (int i = 0; i < spellsOfCurrentTier.length; i++) {
+            if (spellsOfCurrentTier[i] == null || spellsOfCurrentTier[i].icon == null)
+                continue;
+            if (spellsOfCurrentTier[i].manaCost > p.getMana())
+                GameView.paintForBitmaps.setAlpha(100);
+            c.drawBitmap(spellsOfCurrentTier[i].icon, (0.02f + 0.245f * i) * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
+            GameView.paintForBitmaps.setAlpha(255);
+
         }
     }
 }

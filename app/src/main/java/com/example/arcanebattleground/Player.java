@@ -20,6 +20,7 @@ public class Player extends GameEntity {
         super(sprites);
         setMaxHealth(100);
         setHealth(100);
+        setLinkedPlayer(this);
     }
 
     @Override

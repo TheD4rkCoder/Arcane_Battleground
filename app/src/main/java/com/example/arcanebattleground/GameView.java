@@ -18,7 +18,7 @@ import com.example.arcanebattleground.Actions.DefaultPlayerAction;
 import java.util.ArrayList;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap;
+    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap;
     public static float hexagonWidth, hexagonHeight;
     public static Paint paintForBitmaps, paintForTexts, paintForShapes;
     public static int screenHeight, screenWidth;
@@ -39,7 +39,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         screenWidth = getResources().getDisplayMetrics().widthPixels;
         screenHeight = getResources().getDisplayMetrics().heightPixels;
 
-        cancelBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cancel), (int)(GameView.screenWidth*0.225), (int)(GameView.screenWidth*0.225), false);
+        cancelBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cancel), (int)(screenWidth*0.225), (int)(screenWidth*0.225), false);
+        windIconBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wind), (int)(screenWidth*0.225), (int)(screenWidth*0.225), false);
 
         // getting a .png from drawable folder:
         boardBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.hexagonboard2);
@@ -142,7 +143,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             float centerX = hexagonWidth * (e.getX() - 0.04f + ((e.getY() % 2 == 0) ? 0.5f : 1f));
             float centerY = hexagonHeight * (e.getY() + 0.65f);
             if (i == currentEntitiesTurn) {
-                drawPossibleActionCircles(c, e.getX(), e.getY(), 1); //e.getDefaultAction().radius
+                drawPossibleActionCircles(c, e.getX(), e.getY(), currentAction.radius);
                 c.drawBitmap(selectedEntityBitmap, centerX - (selectedEntityBitmap.getWidth() >> 1), centerY - (selectedEntityBitmap.getHeight() >> 1), paintForBitmaps);
             }
             e.drawOnBoard(c, centerX, centerY);
@@ -159,7 +160,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if (animationPlaying)
             return true;
         boolean endMove = false;
-        if (event.getAction() == MotionEvent.ACTION_DOWN) { // MotionEvent has all the possible actions (if you need it to be only on drag or smth)
+        if (event.getAction() == MotionEvent.ACTION_UP) { // MotionEvent has all the possible actions (if you need it to be only on drag or smth)
             if (event.getY() < boardBitmap.getHeight()) {
                 int fieldY = (int) ((event.getY() - 0.15f * hexagonHeight) / hexagonHeight);
                 int fieldX = (int) ((event.getX() - hexagonWidth * ((fieldY % 2 == 0) ? 0f : 0.5f)) / hexagonWidth);
