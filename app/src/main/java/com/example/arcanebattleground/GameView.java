@@ -6,34 +6,31 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 
+import com.example.arcanebattleground.Actions.Action;
+import com.example.arcanebattleground.Actions.DefaultPlayerAction;
+
 import java.util.ArrayList;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    public static Bitmap oldSpriteSheet;
-    public static Bitmap spellSpriteSheet;
+    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap;
+    public static float hexagonWidth, hexagonHeight;
+    public static Paint paintForBitmaps, paintForTexts, paintForShapes;
+    public static int screenHeight, screenWidth;
     private SurfaceHolder holder;
     private Bitmap boardBitmap;
-    private float hexagonWidth;
-    private float hexagonHeight;
-    private Paint paintForBitmaps;
-    private Paint paintForTexts;
-    private Paint paintForShapes;
-    private int screenHeight, screenWidth;
     private ArrayList<CustomRect> rectsToDraw = new ArrayList<>();
     private ArrayList<CustomCircle> circlesToDraw = new ArrayList<>();
-    private Player[] players = new Player[2];
-    private int currentTurn = 0;
+    private static final ArrayList<GameEntity> entities = new ArrayList<>();
+    private static int currentEntitiesTurn = 0;
+    public static Action currentAction;
     private boolean animationPlaying = false;
     private Bitmap selectedEntityBitmap;
-    private Bitmap castIndicatorBitmap;
-    private Bitmap castButtonBitmap;
 
     public GameView(Context context) {
         super(context);
@@ -42,6 +39,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         screenWidth = getResources().getDisplayMetrics().widthPixels;
         screenHeight = getResources().getDisplayMetrics().heightPixels;
 
+        cancelBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cancel), (int)(GameView.screenWidth*0.225), (int)(GameView.screenWidth*0.225), false);
 
         // getting a .png from drawable folder:
         boardBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.hexagonboard2);
@@ -50,15 +48,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         hexagonWidth = boardBitmap.getWidth() / 6.47f;
         hexagonHeight = boardBitmap.getHeight() / 13.32f;
 
-        players[0] = new Player(Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 32, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false));
-        players[0].setY(11);
-        players[0].setX(4);
-        players[1] = new Player(Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 64, 64, 128, 128), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false));
-        players[1].setY(1);
+
+        entities.add(new Player(new Bitmap[]{Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 32, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false)}));
+        entities.get(0).setY(11);
+        entities.get(0).setX(4);
+        entities.add(new Player(new Bitmap[]{Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 64, 64, 128, 128), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false)}));
+        entities.get(1).setY(1);
+        entities.get(0).setDefaultAction(new DefaultPlayerAction());
+        currentAction = entities.get(currentEntitiesTurn).getDefaultAction();
 
         selectedEntityBitmap = Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.spellSpriteSheet, 277, 88, 61, 62), (int) (hexagonWidth * 0.9f), (int) (hexagonWidth * 0.9f), false);
-        castIndicatorBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.gem_ruby_large), (int) (hexagonWidth * 0.2f), (int) (hexagonWidth * 0.2f), false);
-        castButtonBitmap = Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.spellSpriteSheet, 404, 86, 128, 128), (int) (hexagonWidth * 0.9f), (int) (hexagonWidth * 0.9f), false);
+        Player.castIndicatorBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.gem_ruby_large), (int) (hexagonWidth * 0.2f), (int) (hexagonWidth * 0.2f), false);
+        Player.castButtonBitmap = Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.spellSpriteSheet, 404, 86, 128, 128), (int) (hexagonWidth * 0.9f), (int) (hexagonWidth * 0.9f), false);
 
         paintForBitmaps = new Paint();
         paintForBitmaps.setAntiAlias(false); // needed in 'drawBitmap' if pixel-art gets distorted when drawing
@@ -67,7 +68,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         paintForTexts = new Paint();
         paintForTexts.setColor(Color.RED); // color for drawline, drawcircle ect.
-        paintForTexts.setTextSize(screenWidth*0.1f); // well, what do you think it does? //Is it american?
+        paintForTexts.setTextSize(screenWidth * 0.1f); // well, what do you think it does? //Is it american?
         paintForTexts.setTypeface(getResources().getFont(R.font.dpcomic)); // set font for drawText()
         paintForTexts.setTextAlign(Paint.Align.RIGHT);
 
@@ -75,6 +76,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         holder = getHolder();
         holder.addCallback(this);
+    }
+
+    public void endMove() {
+        currentEntitiesTurn = (currentEntitiesTurn + 1) % entities.size();
+        resetToDefaultAction();
+    }
+    public static void resetToDefaultAction() {
+        currentAction = entities.get(currentEntitiesTurn).getDefaultAction();
     }
 
     public static int getDistance(int x1, int x2, int y1, int y2) {
@@ -85,7 +94,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
         return Math.abs(y1 - y2) + Math.abs(x1 - x2) - (Math.abs(y1 - y2) >> 1);
     }
-
+    public static ArrayList<GameEntity> getCollidingEntities(int x, int y) {
+        ArrayList<GameEntity> list = new ArrayList<>();
+        for (GameEntity e : entities) {
+            if (e.getX() == x && e.getY() == y)
+                list.add(e);
+        }
+        return list;
+    }
     private void drawPossibleActionCircles(Canvas c, int centerX, int centerY, int radius) {
         paintForShapes.setColor(Color.GRAY);
         paintForShapes.setAlpha(150);
@@ -117,41 +133,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         paintForShapes.setColor(Color.LTGRAY);
         c.drawRect(0, boardBitmap.getHeight(), screenWidth, screenHeight, paintForShapes);
 
-        paintForShapes.setColor(Color.GRAY);
-        c.drawRect(0.02f * screenWidth, screenHeight - 0.245f * screenWidth, 0.245f * screenWidth, screenHeight - 0.02f * screenWidth, paintForShapes);
-        c.drawRect(0.265f * screenWidth, screenHeight - 0.245f * screenWidth, 0.49f * screenWidth, screenHeight - 0.02f * screenWidth, paintForShapes);
-        c.drawRect(0.51f * screenWidth, screenHeight - 0.245f * screenWidth, 0.735f * screenWidth, screenHeight - 0.02f * screenWidth, paintForShapes);
-        c.drawRect(0.755f * screenWidth, screenHeight - 0.245f * screenWidth, 0.98f * screenWidth, screenHeight - 0.02f * screenWidth, paintForShapes);
+        entities.get(currentEntitiesTurn).drawEntityDescription(c, boardBitmap.getHeight(), screenHeight - boardBitmap.getHeight() - (screenWidth >> 2));
 
-        paintForTexts.setColor(Color.RED);
-        c.drawText("" + players[currentTurn].getHealth() + "/" + players[currentTurn].getMaxHealth(), screenWidth * 0.35f, boardBitmap.getHeight() + paintForTexts.getTextSize(), paintForTexts);
-        paintForTexts.setColor(Color.BLUE);
-        c.drawText("" + players[currentTurn].getHealth() + "/" + players[currentTurn].getMaxMana(), screenWidth * 0.97f, boardBitmap.getHeight() + paintForTexts.getTextSize(), paintForTexts);
-        c.drawBitmap(castButtonBitmap, screenWidth * 0.5f - (castButtonBitmap.getWidth()>>1), boardBitmap.getHeight() + 20, paintForBitmaps);
+        currentAction.drawDescription(c, screenHeight - (screenWidth >> 2), (screenWidth >> 2), entities.get(currentEntitiesTurn));
 
-        for (int i = 0; i < players.length; i++) {
-            Player p = players[i];
-            Bitmap b = p.getIdleSprite();
-            if (i == currentTurn) {
-                drawPossibleActionCircles(c, p.getX(), p.getY(), 1);
-                c.drawBitmap(selectedEntityBitmap, hexagonWidth * (p.getX() - 0.04f + ((p.getY() % 2 == 0) ? 0.5f : 1f)) - (selectedEntityBitmap.getWidth() >> 1), hexagonHeight * (p.getY() + 0.65f) - (selectedEntityBitmap.getHeight() >> 1), paintForBitmaps);
+        for (int i = 0; i < entities.size(); i++) {
+            GameEntity e = entities.get(i);
+            float centerX = hexagonWidth * (e.getX() - 0.04f + ((e.getY() % 2 == 0) ? 0.5f : 1f));
+            float centerY = hexagonHeight * (e.getY() + 0.65f);
+            if (i == currentEntitiesTurn) {
+                drawPossibleActionCircles(c, e.getX(), e.getY(), 1); //e.getDefaultAction().radius
+                c.drawBitmap(selectedEntityBitmap, centerX - (selectedEntityBitmap.getWidth() >> 1), centerY - (selectedEntityBitmap.getHeight() >> 1), paintForBitmaps);
             }
-            for (int j = 0; j < p.getRoundsCast(); j++) {
-                c.drawBitmap(castIndicatorBitmap, hexagonWidth * (p.getX() - 0.04f + ((p.getY() % 2 == 0) ? 0.5f : 1f)) - (((p.getRoundsCast() - 2 * j) * castIndicatorBitmap.getWidth()) >> 1), hexagonHeight * (p.getY() + 0.1f) - (castIndicatorBitmap.getHeight() >> 1), paintForBitmaps);
-            }
-            c.drawBitmap(b, hexagonWidth * (p.getX() - 0.04f + ((p.getY() % 2 == 0) ? 0.5f : 1f)) - (b.getWidth() >> 1), hexagonHeight * (p.getY() + 0.65f) - (b.getHeight() >> 1), paintForBitmaps);
+            e.drawOnBoard(c, centerX, centerY);
         }
-
-        /*
-        // if we're using Bitmaps for everything, what's the use of this?
-        paintForShapes.setColor(Color.GREEN);
-        paintForShapes.setStyle(Paint.Style.FILL);
-        for (CustomRect r : rectsToDraw) {
-            c.drawRect(r.left * screenWidth, r.top * screenHeight, r.right * screenWidth, r.bottom * screenHeight, paintForShapes);
-        }
-        for (CustomCircle cir : circlesToDraw)
-            c.drawCircle(cir.centerX * screenWidth, cir.centerY * screenHeight, cir.radius * screenWidth, paintForShapes);
-         */
+        // TODO: implement something for Animations
 
         // should always be last:
         holder.unlockCanvasAndPost(c);
@@ -162,30 +158,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         // do smth different for online i guess
         if (animationPlaying)
             return true;
+        boolean endMove = false;
         if (event.getAction() == MotionEvent.ACTION_DOWN) { // MotionEvent has all the possible actions (if you need it to be only on drag or smth)
-            if (event.getY() < boardBitmap.getHeight() - 0.28 * hexagonHeight && event.getY() > hexagonHeight * 0.28) {
+            if (event.getY() < boardBitmap.getHeight()) {
                 int fieldY = (int) ((event.getY() - 0.15f * hexagonHeight) / hexagonHeight);
                 int fieldX = (int) ((event.getX() - hexagonWidth * ((fieldY % 2 == 0) ? 0f : 0.5f)) / hexagonWidth);
-                if (getDistance(players[currentTurn].getX(), fieldX, players[currentTurn].getY(), fieldY) == 0) {
-                    // meditate
-                } else if (getDistance(players[currentTurn].getX(), fieldX, players[currentTurn].getY(), fieldY) == 1) {
-                    players[currentTurn].setX(fieldX);
-                    players[currentTurn].setY(fieldY);
-                }
-            } else if (event.getY() > screenHeight - (screenWidth >> 4)) {
-                // open spell window or smth
-                if (event.getX() < 0.25f * screenWidth) {
-                } else if (event.getX() < 0.5f * screenWidth) {
-                } else if (event.getX() < 0.75f * screenWidth) {
-                } else {
-                }
+                if (fieldX < 0 || fieldX > 5 || fieldY < 0 || fieldY > 12)
+                    return true;
+
+                endMove = currentAction.boardTap(fieldX, fieldY, entities.get(currentEntitiesTurn));
+
+            } else if (event.getY() > screenHeight - (screenWidth >> 2)) {
+                endMove = currentAction.descriptionTap(event.getX(), entities.get(currentEntitiesTurn));
             } else {
-                players[currentTurn].setRoundsCast(players[currentTurn].getRoundsCast() + 1);
-                currentTurn = (currentTurn + 1) % players.length;
+                endMove = entities.get(currentEntitiesTurn).tapEntityDescription();
             }
         }
+        if (endMove)
+            endMove();
         // redraw the canvas to show the next frame:
-        drawGame();
+        drawGame(); // should / will be given to another thread (for animations)
         return true; // touch already handled (for event bubbling)
     }
 

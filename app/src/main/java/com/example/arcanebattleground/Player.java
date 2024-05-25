@@ -1,41 +1,66 @@
 package com.example.arcanebattleground;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 
-public class Player {
+import com.example.arcanebattleground.Actions.Action;
+import com.example.arcanebattleground.Actions.DefaultPlayerAction;
+
+public class Player extends GameEntity {
+    public static Bitmap castIndicatorBitmap;
+    public static Bitmap castButtonBitmap;
     private final int statCaps = 999;
-    private int[] position = {0, 0};
-    private Bitmap[] movementAnimationSprites;
-    private Bitmap idleSprite; // could later be extended
-
-    private int mana = 100;
+    private static Action defaultAction;
+    private int mana = 50;
     private int maxMana = 100;
-    private int health = 100;
-    private int maxHealth = 100;
     private int roundsCast = 0;
 
-    public Player (Bitmap idleSprite) {
-        this.idleSprite = idleSprite;
+    public Player(Bitmap[] sprites) {
+        super(sprites);
+        setMaxHealth(100);
+        setHealth(100);
     }
 
-    public Bitmap getIdleSprite() {
-        return idleSprite;
+    @Override
+    public void drawOnBoard(Canvas c, float hexagonCenterX, float hexagonCenterY) {
+        super.drawOnBoard(c, hexagonCenterX, hexagonCenterY);
+        for (int j = 0; j < roundsCast; j++) {
+            c.drawBitmap(castIndicatorBitmap, hexagonCenterX - (((roundsCast - 2 * j) * castIndicatorBitmap.getWidth()) >> 1), hexagonCenterY - GameView.hexagonHeight * 0.55f - (castIndicatorBitmap.getHeight() >> 1), GameView.paintForBitmaps);
+        }
     }
 
-    public int getX() {
-        return position [0];
+    @Override
+    public void drawEntityDescription(Canvas c, float startY, float height) {
+        GameView.paintForTexts.setColor(Color.RED);
+        c.drawText("" + health + "/" + maxHealth, GameView.screenWidth * 0.35f, startY + GameView.paintForTexts.getTextSize(), GameView.paintForTexts);
+        GameView.paintForTexts.setColor(Color.BLUE);
+
+        c.drawText("" + mana + "/" + maxMana, GameView.screenWidth * 0.97f, startY + GameView.paintForTexts.getTextSize(), GameView.paintForTexts);
+
+        if (mana < 10)
+            GameView.paintForBitmaps.setAlpha(50);
+        c.drawBitmap(castButtonBitmap, GameView.screenWidth * 0.5f - (castButtonBitmap.getWidth() >> 1), startY + 20, GameView.paintForBitmaps);
+        GameView.paintForBitmaps.setAlpha(255);
     }
 
-    public void setX(int x) {
-        this.position[0] = x;
+    @Override
+    public boolean tapEntityDescription() {
+        if (mana < 10)
+            return false;
+        mana -= 10;
+        roundsCast++;
+        return true;
     }
 
-    public int getY() {
-        return position[1];
+    @Override
+    public Action getDefaultAction() {
+        return defaultAction;
     }
 
-    public void setY(int y) {
-        this.position[1] = y;
+    @Override
+    public void setDefaultAction(Action action) {
+        defaultAction = action;
     }
 
     public int getMana() {
@@ -54,21 +79,6 @@ public class Player {
         this.maxMana = maxMana;
     }
 
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
-    public int getMaxHealth() {
-        return maxHealth;
-    }
-
-    public void setMaxHealth(int maxHealth) {
-        this.maxHealth = maxHealth;
-    }
 
     public int getRoundsCast() {
         return roundsCast;
