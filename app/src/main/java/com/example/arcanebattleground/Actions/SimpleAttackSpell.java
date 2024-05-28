@@ -38,6 +38,7 @@ public class SimpleAttackSpell extends Spell {
                 en.setHealth(en.getHealth() - damage);
             }
             p.setMana(p.getMana() - manaCost);
+            GameView.startAnimation(p.getX(), p.getY(), x, y, new Bitmap[]{icon}, false);
             return true;
         }
         return false;
