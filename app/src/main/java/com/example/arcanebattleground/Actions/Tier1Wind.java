@@ -14,6 +14,9 @@ import com.example.arcanebattleground.Player;
 import com.example.arcanebattleground.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class Tier1Wind extends Spell{
     public Tier1Wind() {
@@ -30,6 +33,8 @@ public class Tier1Wind extends Spell{
             return false;
         if (getDistance(x, e.getX(), y, e.getY()) <= radius) {
             GameView.currentAction = new Tier1Wind2(x, y, 2, manaCost);
+
+            GameView.startAnimation(p.getX(), p.getY(), x, y, new Bitmap[]{icon}, true);
         }
         return false;
     }

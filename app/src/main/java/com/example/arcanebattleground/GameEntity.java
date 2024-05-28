@@ -13,10 +13,13 @@ public abstract class GameEntity {
     protected int health;
     protected int maxHealth;
     private Player linkedPlayer;
+    private boolean isVisible = true;
     public GameEntity(Bitmap[] animationSprites) {
         this.animationSprites = animationSprites;
     }
     public void drawOnBoard(Canvas c, float hexagonCenterX, float hexagonCenterY) {
+        if (!isVisible)
+            return;
         Bitmap b = this.getNextSprite();
         c.drawBitmap(b, hexagonCenterX- (b.getWidth() >> 1), hexagonCenterY - (b.getHeight() >> 1), GameView.paintForBitmaps);
     }
@@ -40,6 +43,9 @@ public abstract class GameEntity {
     private Bitmap getNextSprite() {
         currentSprite = (currentSprite + 1) % animationSprites.length;
         return animationSprites[currentSprite];
+    }
+    public Bitmap[] getAnimationSprites() {
+        return animationSprites;
     }
     public abstract Action getDefaultAction();
     public abstract void setDefaultAction(Action action);
@@ -73,5 +79,13 @@ public abstract class GameEntity {
 
     public void setMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisibility(boolean visible) {
+        isVisible = visible;
     }
 }

@@ -11,9 +11,9 @@ import com.example.arcanebattleground.GameEntity;
 import com.example.arcanebattleground.GameView;
 
 public abstract class Spell extends Action {
-    protected int manaCost;
-    protected Bitmap icon;
-    protected Bitmap[] animationSprites;
+    public int manaCost;
+    public Bitmap icon;
+    public Bitmap[] animationSprites;
     String name;
     @Override
     public void drawDescription(Canvas c, int startY, int height, GameEntity e) {

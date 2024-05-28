@@ -7,9 +7,14 @@ import android.graphics.Color;
 import com.example.arcanebattleground.Actions.Action;
 import com.example.arcanebattleground.Actions.DefaultPlayerAction;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Player extends GameEntity {
     public static Bitmap castIndicatorBitmap;
     public static Bitmap castButtonBitmap;
+    public static Bitmap castAnimation[];
     private final int statCaps = 999;
     private static Action defaultAction;
     private int mana = 50;
@@ -51,6 +56,8 @@ public class Player extends GameEntity {
             return false;
         mana -= 10;
         roundsCast++;
+        // start animation
+        GameView.startAnimation(getX(), getY(), getX(), getY(), castAnimation, false);
         return true;
     }
 

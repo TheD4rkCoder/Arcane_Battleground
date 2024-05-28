@@ -4,6 +4,7 @@ import static com.example.arcanebattleground.GameView.getDistance;
 import static com.example.arcanebattleground.GameView.screenHeight;
 import static com.example.arcanebattleground.GameView.screenWidth;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
@@ -12,10 +13,12 @@ import com.example.arcanebattleground.GameView;
 import com.example.arcanebattleground.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DefaultPlayerAction extends Action {
 
     private ArrayList<Spell[]> spells = new ArrayList<>();
+    private Bitmap[] meditationAnimation;
 
     public DefaultPlayerAction() {
         radius = 1;
@@ -36,9 +39,11 @@ public class DefaultPlayerAction extends Action {
                 mana = p.getMaxMana();
             p.setMana(mana);
             p.setRoundsCast(0);
+            // still need to start meditationAnimation
             return true;
         }
         if (getDistance(p.getX(), x, p.getY(), y) <= radius) {
+            GameView.startAnimation(p.getX(), p.getY(), x, y, p.getAnimationSprites(), false, Collections.singletonList(p));
             p.setX(x);
             p.setY(y);
             p.setRoundsCast(0);
