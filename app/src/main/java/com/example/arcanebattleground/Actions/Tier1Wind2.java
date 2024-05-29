@@ -15,10 +15,7 @@ import java.util.ArrayList;
 public class Tier1Wind2 extends Spell {
     private int fromX, fromY;
     public Tier1Wind2(int x, int y, int radius, int cost) {
-        this.radius = radius;
-        this.manaCost = cost;
-        this.icon = GameView.windIconBitmap;
-        this.name = "Winds";
+        super("Winds", cost, radius, GameView.windIconBitmap);
         this.fromX = x;
         this.fromY = y;
         // animationSprites =
@@ -39,14 +36,4 @@ public class Tier1Wind2 extends Spell {
         return false;
     }
 
-    @Override
-    public boolean descriptionTap(float x, GameEntity e) {
-        GameView.resetToDefaultAction();
-        return false;
-    }
-
-    @Override
-    public void drawDescription(Canvas c, int startY, int height, GameEntity e) {
-        super.drawDescription(c, startY, height, e);
-    }
 }

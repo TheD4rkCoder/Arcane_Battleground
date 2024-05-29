@@ -20,10 +20,7 @@ import java.util.List;
 
 public class Tier1Wind extends Spell{
     public Tier1Wind() {
-        this.radius = 2;
-        this.manaCost = 30;
-        this.icon = GameView.windIconBitmap;
-        this.name = "Winds";
+        super("Winds", 30, 2, GameView.windIconBitmap);
         // animationSprites =
     }
     @Override
@@ -37,16 +34,5 @@ public class Tier1Wind extends Spell{
             GameView.startAnimation(p.getX(), p.getY(), x, y, new Bitmap[]{icon}, true);
         }
         return false;
-    }
-
-    @Override
-    public boolean descriptionTap(float x, GameEntity e) {
-        GameView.resetToDefaultAction();
-        return false;
-    }
-
-    @Override
-    public void drawDescription(Canvas c, int startY, int height, GameEntity e) {
-        super.drawDescription(c, startY, height, e);
     }
 }

@@ -22,14 +22,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap;
+    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap, tier1SprintSpellBitmap, tier10GeneOptimizationBitmap;
     public static float hexagonWidth, hexagonHeight;
     public static Paint paintForBitmaps, paintForTexts, paintForShapes;
     public static int screenHeight, screenWidth;
     public static Action currentAction;
     public static GameLoop gameLoop;
     private static SurfaceHolder holder;
-    private static Bitmap boardBitmap, selectedEntityBitmap;
+    private static Bitmap boardBitmap, lavaBackgroundBitmap, selectedEntityBitmap;
     private static final ArrayList<GameEntity> entities = new ArrayList<>();
     private static int currentEntitiesTurn = 0;
 
@@ -44,12 +44,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         windIconBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wind), (int) (screenWidth * 0.225), (int) (screenWidth * 0.225), false);
 
         // getting a .png from drawable folder:
-        boardBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.hexagonboard2);
+        boardBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.hexagonboard3);
         // last argument (boolean) if for whether you want to use some sort of gaussian filter (if your scaled up image should be pixelated: false, otherwise: ture)
-        boardBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.hexagonboard2), screenWidth, (int) (screenHeight * 0.8), false);
+        boardBitmap = Bitmap.createScaledBitmap(boardBitmap, screenWidth, (int) (screenHeight - screenWidth * 0.45f), false);
+        lavaBackgroundBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.lava_background), 64, 128, false);
+        lavaBackgroundBitmap = Bitmap.createScaledBitmap(lavaBackgroundBitmap, screenWidth, boardBitmap.getHeight(), false);
+
         hexagonWidth = boardBitmap.getWidth() / 6.47f;
         hexagonHeight = boardBitmap.getHeight() / 13.32f;
 
+        tier1SprintSpellBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.swiftness);
+        tier10GeneOptimizationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gene_optimization);
 
         entities.add(new Player(new Bitmap[]{
                 Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 32, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
@@ -75,7 +80,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         Player.castAnimation = new Bitmap[5];
         Player.castAnimation[0] = Bitmap.createScaledBitmap(Player.castButtonBitmap, (int) (hexagonWidth * 2f), (int) (hexagonWidth * 2f), false);
-        ;
+
         Matrix m = new Matrix();
         m.postRotate(10);
         Player.castAnimation[1] = Bitmap.createBitmap(Player.castAnimation[0], 0, 0, Player.castAnimation[0].getWidth(), Player.castAnimation[0].getHeight(), m, false);
@@ -135,7 +140,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     private static void drawPossibleActionCircles(Canvas c, int centerX, int centerY, int radius) {
         paintForShapes.setColor(Color.GRAY);
-        paintForShapes.setAlpha(150);
+        paintForShapes.setAlpha(200);
         int start, end;
         for (int y = centerY - radius; y <= centerY + radius; y++) {
             if (y % 2 == 0) {
@@ -175,26 +180,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public static void drawGame() {
         //should always be first:
         Canvas c = holder.lockCanvas();
+        c.drawBitmap(lavaBackgroundBitmap, 0, 0, paintForBitmaps);
+        c.drawBitmap(boardBitmap, 0, 0, paintForBitmaps); // paint doesn't matter much for bitmaps/images (but is important for rect, font ect.)
 
-        c.drawBitmap(boardBitmap, 0, 0, null); // paint doesn't matter much for bitmaps/images (but is important for rect, font ect.)
-
-        paintForShapes.setColor(Color.LTGRAY);
+        paintForShapes.setColor(Color.DKGRAY);
         c.drawRect(0, boardBitmap.getHeight(), screenWidth, screenHeight, paintForShapes);
 
         entities.get(currentEntitiesTurn).drawEntityDescription(c, boardBitmap.getHeight(), screenHeight - boardBitmap.getHeight() - (screenWidth >> 2));
 
-        currentAction.drawDescription(c, screenHeight - (screenWidth >> 2), (screenWidth >> 2), entities.get(currentEntitiesTurn));
+        currentAction.drawDescription(c, screenHeight - (int) (screenWidth * 0.27f), (int) (screenWidth * 0.27f), entities.get(currentEntitiesTurn));
 
-        for (int i = 0; i < entities.size(); i++) {
-            GameEntity e = entities.get(i);
-            float centerX = hexagonWidth * (e.getX() - 0.04f + ((e.getY() % 2 == 0) ? 0.5f : 1f));
-            float centerY = hexagonHeight * (e.getY() + 0.65f);
-            if (i == currentEntitiesTurn) {
-                drawPossibleActionCircles(c, e.getX(), e.getY(), currentAction.radius); // only in your turn / always if not playing online
-                c.drawBitmap(selectedEntityBitmap, centerX - (selectedEntityBitmap.getWidth() >> 1), centerY - (selectedEntityBitmap.getHeight() >> 1), paintForBitmaps);
-            }
-            e.drawOnBoard(c, centerX, centerY);
-        }
 
         if (Animation.isAnimationPlaying()) {
             Bitmap b = Animation.getNextAnimationBitmap();
@@ -202,7 +197,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         } else if (Animation.stayAfterEnd) {
             Bitmap b = Animation.getNextAnimationBitmap();
             c.drawBitmap(b, Animation.endX - (b.getWidth() >> 1), Animation.endY - (b.getHeight() >> 1), paintForBitmaps);
+        }
 
+        for (int i = 0; i < entities.size(); i++) {
+            GameEntity e = entities.get(i);
+            float centerX = hexagonWidth * (e.getX() - 0.04f + ((e.getY() % 2 == 0) ? 0.5f : 1f));
+            float centerY = hexagonHeight * (e.getY() + 0.65f);
+            if (i == currentEntitiesTurn && !Animation.isAnimationPlaying()) {
+                drawPossibleActionCircles(c, e.getX(), e.getY(), currentAction.radius); // only in your turn / always if not playing online
+                c.drawBitmap(selectedEntityBitmap, centerX - (selectedEntityBitmap.getWidth() >> 1), centerY - (selectedEntityBitmap.getHeight() >> 1), paintForBitmaps);
+            }
+            e.drawOnBoard(c, centerX, centerY);
         }
 
         // should always be last:

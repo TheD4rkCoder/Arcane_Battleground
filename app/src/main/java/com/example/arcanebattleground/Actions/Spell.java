@@ -14,7 +14,22 @@ public abstract class Spell extends Action {
     public int manaCost;
     public Bitmap icon;
     public Bitmap[] animationSprites;
-    String name;
+    private String name;
+
+    public Spell(String name, int manaCost, int radius, Bitmap icon) {
+        this.icon = Bitmap.createScaledBitmap(icon, 16, 16, false);
+        this.icon = Bitmap.createScaledBitmap(this.icon, (int)(screenWidth*0.225), (int)(screenWidth*0.225), false);
+        this.name = name;
+        this.manaCost = manaCost;
+        this.radius = radius;
+    }
+
+    @Override
+    public boolean descriptionTap(float x, GameEntity e) {
+        GameView.resetToDefaultAction();
+        return false;
+    }
+
     @Override
     public void drawDescription(Canvas c, int startY, int height, GameEntity e) {
         GameView.paintForShapes.setColor(Color.GRAY);

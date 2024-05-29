@@ -19,11 +19,8 @@ public class SimpleAttackSpell extends Spell {
     int damage;
 
     public SimpleAttackSpell(String name, int manaCost, int radius, int damage, Bitmap icon) {
+        super(name, manaCost, radius,icon);
         this.damage = damage;
-        this.radius = radius;
-        this.manaCost = manaCost;
-        this.icon = icon;
-        this.name = name;
         // animationSprites =
     }
 
@@ -42,16 +39,5 @@ public class SimpleAttackSpell extends Spell {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean descriptionTap(float x, GameEntity e) {
-        GameView.resetToDefaultAction();
-        return false;
-    }
-
-    @Override
-    public void drawDescription(Canvas c, int startY, int height, GameEntity e) {
-        super.drawDescription(c, startY, height, e);
     }
 }

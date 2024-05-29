@@ -25,16 +25,23 @@ public class DefaultPlayerAction extends Action {
         Spell[] tier1Spells = new Spell[4];
         tier1Spells[0] = new Tier1FireSparks();
         tier1Spells[1] = new Tier1Wind();
+        tier1Spells[2] = new Tier1Sprint();
         spells.add(tier1Spells);
+        for(int i = 1; i < 6; i++) {
+            spells.add(new Spell[4]);
+        }
+
+        Spell[] tier7Spells = new Spell[4];
+        tier7Spells[0] = new Tier10GeneOptimization();
+        spells.add(tier7Spells);
     }
 
     @Override
     public boolean boardTap(int x, int y, GameEntity e) {
-        // walk
         Player p = (Player) e;
         if (getDistance(p.getX(), x, p.getY(), y) == 0) {
             int mana = p.getMana();
-            mana += 20;
+            mana += p.getMaxMana()/5;
             if (mana > p.getMaxMana())
                 mana = p.getMaxMana();
             p.setMana(mana);

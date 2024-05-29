@@ -19,6 +19,7 @@ public class Player extends GameEntity {
     private static Action defaultAction;
     private int mana = 50;
     private int maxMana = 100;
+    private final int maxRoundsCast = 6;
     private int roundsCast = 0;
 
     public Player(Bitmap[] sprites) {
@@ -39,12 +40,12 @@ public class Player extends GameEntity {
     @Override
     public void drawEntityDescription(Canvas c, float startY, float height) {
         GameView.paintForTexts.setColor(Color.RED);
-        c.drawText("" + health + "/" + maxHealth, GameView.screenWidth * 0.35f, startY + GameView.paintForTexts.getTextSize(), GameView.paintForTexts);
+        c.drawText("" + health + "/" + maxHealth, GameView.screenWidth * 0.35f, startY + GameView.paintForTexts.getTextSize() + GameView.screenWidth * 0.02f, GameView.paintForTexts);
         GameView.paintForTexts.setColor(Color.BLUE);
 
-        c.drawText("" + mana + "/" + maxMana, GameView.screenWidth * 0.97f, startY + GameView.paintForTexts.getTextSize(), GameView.paintForTexts);
+        c.drawText("" + mana + "/" + maxMana, GameView.screenWidth * 0.97f, startY + GameView.paintForTexts.getTextSize() + GameView.screenWidth * 0.02f, GameView.paintForTexts);
 
-        if (mana < 10)
+        if (mana < 10 || roundsCast >= maxRoundsCast)
             GameView.paintForBitmaps.setAlpha(50);
         c.drawBitmap(castButtonBitmap, GameView.screenWidth * 0.5f - (castButtonBitmap.getWidth() >> 1), startY + 20, GameView.paintForBitmaps);
         GameView.paintForBitmaps.setAlpha(255);
@@ -52,6 +53,8 @@ public class Player extends GameEntity {
 
     @Override
     public boolean tapEntityDescription() {
+        if (roundsCast >= maxRoundsCast)
+            return false;
         if (mana < 10)
             return false;
         mana -= 10;
@@ -94,5 +97,8 @@ public class Player extends GameEntity {
 
     public void setRoundsCast(int roundsCast) {
         this.roundsCast = roundsCast;
+    }
+    public int getStatCaps() {
+        return statCaps;
     }
 }
