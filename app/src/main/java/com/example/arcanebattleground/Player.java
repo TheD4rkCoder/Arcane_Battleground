@@ -41,7 +41,7 @@ public class Player extends GameEntity {
     public void drawEntityDescription(Canvas c, float startY, float height) {
         GameView.paintForTexts.setColor(Color.RED);
         c.drawText("" + health + "/" + maxHealth, GameView.screenWidth * 0.35f, startY + GameView.paintForTexts.getTextSize() + GameView.screenWidth * 0.02f, GameView.paintForTexts);
-        GameView.paintForTexts.setColor(Color.BLUE);
+        GameView.paintForTexts.setColor(Color.parseColor("#30a2ff"));
 
         c.drawText("" + mana + "/" + maxMana, GameView.screenWidth * 0.97f, startY + GameView.paintForTexts.getTextSize() + GameView.screenWidth * 0.02f, GameView.paintForTexts);
 

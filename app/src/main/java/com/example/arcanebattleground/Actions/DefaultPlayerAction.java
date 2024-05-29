@@ -87,11 +87,6 @@ public class DefaultPlayerAction extends Action {
         Player p = (Player) e;
         if (p.getRoundsCast() >= spells.size())
             return;
-        GameView.paintForShapes.setColor(Color.GRAY);
-        c.drawRect(0.02f * screenWidth, startY + 0.02f * screenWidth, 0.245f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
-        c.drawRect(0.265f * screenWidth, startY + 0.02f * screenWidth, 0.49f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
-        c.drawRect(0.51f * screenWidth, startY + 0.02f * screenWidth, 0.735f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
-        c.drawRect(0.755f * screenWidth, startY + 0.02f * screenWidth, 0.98f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
 
         Spell[] spellsOfCurrentTier = spells.get(p.getRoundsCast());
         for (int i = 0; i < spellsOfCurrentTier.length; i++) {
@@ -99,8 +94,12 @@ public class DefaultPlayerAction extends Action {
                 continue;
             if (spellsOfCurrentTier[i].manaCost > p.getMana())
                 GameView.paintForBitmaps.setAlpha(100);
+            c.drawBitmap(GameView.spellSlotBitmap, (0.02f + 0.245f * i) * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
             c.drawBitmap(spellsOfCurrentTier[i].icon, (0.02f + 0.245f * i) * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
             GameView.paintForBitmaps.setAlpha(255);
+
+            GameView.paintForTexts.setColor(Color.parseColor("#30a2ff"));
+            c.drawText("" + spellsOfCurrentTier[i].manaCost, (0.245f + 0.245f * i) * screenWidth, screenHeight - screenWidth*0.023f, GameView.paintForTexts);
 
         }
     }

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap, tier1SprintSpellBitmap, tier10GeneOptimizationBitmap;
+    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap, tier1SprintSpellBitmap, tier10GeneOptimizationBitmap, spellSlotBitmap;
     public static float hexagonWidth, hexagonHeight;
     public static Paint paintForBitmaps, paintForTexts, paintForShapes;
     public static int screenHeight, screenWidth;
@@ -55,6 +55,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         tier1SprintSpellBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.swiftness);
         tier10GeneOptimizationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gene_optimization);
+        spellSlotBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.spell_slot), (int)(screenWidth*0.225), (int)(screenWidth*0.225), false);
 
         entities.add(new Player(new Bitmap[]{
                 Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 32, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),

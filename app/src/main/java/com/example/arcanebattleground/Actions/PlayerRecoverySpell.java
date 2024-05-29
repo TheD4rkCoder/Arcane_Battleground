@@ -44,9 +44,4 @@ public class PlayerRecoverySpell extends Spell {
         }
         return false;
     }
-
-    @Override
-    public boolean descriptionTap(float x, GameEntity e) {
-        return false;
-    }
 }

@@ -32,8 +32,7 @@ public abstract class Spell extends Action {
 
     @Override
     public void drawDescription(Canvas c, int startY, int height, GameEntity e) {
-        GameView.paintForShapes.setColor(Color.GRAY);
-        c.drawRect(0.02f * screenWidth, startY + 0.02f * screenWidth, 0.245f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
+        c.drawBitmap(GameView.spellSlotBitmap, 0.02f * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
         c.drawBitmap(icon, 0.02f * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
         c.drawRect(0.755f * screenWidth, startY + 0.02f * screenWidth, 0.98f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
         c.drawBitmap(GameView.cancelBitmap, 0.755f * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
