@@ -8,6 +8,9 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
@@ -42,6 +45,7 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
         c.drawText("Create lobby", screenWidth * 0.5f, screenHeight * 0.4f, paintForTexts);
 
         c.drawText("Join lobby", screenWidth * 0.5f, screenHeight * 0.6f, paintForTexts);
+
 
         // should always be last:
         holder.unlockCanvasAndPost(c);

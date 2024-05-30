@@ -7,12 +7,37 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/resultText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginTop="10dp"
+        android:text="@string/defaultResultString"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toEndOf="@+id/calculate"
+        app:layout_constraintStart_toStartOf="@+id/calculate"
+        app:layout_constraintTop_toBottomOf="@+id/calculate" />
+
+    <Button
+        android:id="@+id/calculate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="calculateButtonPress"
+        android:text="@string/calculateButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="@string/defaultInputString"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/calculate"
+        app:layout_constraintEnd_toEndOf="@+id/calculate"
+        app:layout_constraintStart_toStartOf="@+id/calculate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
