@@ -2,24 +2,27 @@ package com.example.arcanebattleground;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+
+import java.io.IOException;
 
 public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
     private static SurfaceHolder holder;
     private Paint paintForTexts;
     private int screenWidth, screenHeight;
+    private Context context;
+    private MenuFrameLayout menuFrameLayout;
 
-    public MainMenu(Context context) {
+    public MainMenu(Context context, MenuFrameLayout menuFrameLayout) {
         super(context);
         holder = getHolder();
         holder.addCallback(this);
@@ -32,6 +35,9 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
         paintForTexts.setTextSize(screenWidth * 0.1f);
         paintForTexts.setTypeface(getResources().getFont(R.font.dpcomic));
         paintForTexts.setTextAlign(Paint.Align.CENTER);
+        this.context = context;
+        this.menuFrameLayout = menuFrameLayout;
+        menuFrameLayout.setMainMenu(this);
     }
 
     public void drawMenu() {
@@ -40,11 +46,14 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
         // TODO: draw background
 
         // TODO: field for entering id, ect
+
+
         c.drawText("Offline Play", screenWidth * 0.5f, screenHeight * 0.2f, paintForTexts);
 
         c.drawText("Create lobby", screenWidth * 0.5f, screenHeight * 0.4f, paintForTexts);
 
         c.drawText("Join lobby", screenWidth * 0.5f, screenHeight * 0.6f, paintForTexts);
+
 
 
         // should always be last:
@@ -58,13 +67,33 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
                 Intent intent = new Intent(MainActivity.mainActivity, GameActivity.class);
                 MainActivity.mainActivity.startActivity(intent);
             } else if (event.getY() > screenHeight * 0.4- paintForTexts.getTextSize() && event.getY() < screenHeight * 0.4) {
+                Thread t1 = new Thread(() -> {
+                    try {
+                        ServerConnection.oOut.writeInt(-1);
+                        ServerConnection.oOut.flush();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                t1.start();
+                try {
+                    t1.join();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                menuFrameLayout.displayLobbyView();
             } else if (event.getY() > screenHeight * 0.6- paintForTexts.getTextSize() && event.getY() < screenHeight * 0.6) {
+                menuFrameLayout.displayInputLayout();
             }
         }
 
         return true; // touch already handled (for event bubbling)
     }
 
+    public void startGame(){
+        Intent intent = new Intent(MainActivity.mainActivity, GameActivity.class);
+        MainActivity.mainActivity.startActivity(intent);
+    }
 
     // Callback-Functions (just ignore):
     @Override

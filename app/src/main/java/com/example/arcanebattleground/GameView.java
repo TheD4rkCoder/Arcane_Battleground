@@ -214,6 +214,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             e.drawOnBoard(c, centerX, centerY);
         }
 
+
         // should always be last:
         holder.unlockCanvasAndPost(c);
     }
