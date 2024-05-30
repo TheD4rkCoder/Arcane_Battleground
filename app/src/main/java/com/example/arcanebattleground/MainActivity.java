@@ -15,7 +15,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainActivity = this;
-        setContentView(new MainMenu(this));
 
         Socket socket;
 
@@ -29,6 +28,6 @@ public class MainActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
-        setContentView(new GameView(this));
+        setContentView(new MainMenu(this));
     }
 }
