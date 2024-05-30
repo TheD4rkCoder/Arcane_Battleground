@@ -52,7 +52,9 @@ public class LobbyView extends LinearLayout {
         cancelButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                ServerConnection.socket.notify();
+                synchronized (ServerConnection.socket) {
+                    ServerConnection.socket.notify();
+                }
             }
         });
 

@@ -47,11 +47,13 @@ public class EnterGameIdView extends LinearLayout {
         button.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         button.setOnClickListener(view -> {
             ServerConnection.transfer = editText.getText().toString();
-            ServerConnection.socket.notify();
-            try {
-                ServerConnection.socket.wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            synchronized (ServerConnection.socket) {
+                ServerConnection.socket.notify();
+                try {
+                    ServerConnection.socket.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
             menuFrameLayout.displayLobbyView();
         });

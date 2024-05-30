@@ -1,11 +1,13 @@
 package com.example.arcanebattleground;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ServerConnection extends Thread{
+public class ServerConnection extends Thread {
     public static ObjectOutputStream oOut;
     public static ObjectInputStream oIn;
     public static Socket socket;
@@ -19,43 +21,49 @@ public class ServerConnection extends Thread{
     @Override
     public void run() {
         try {
-            socket = new Socket("10.11.12.111", 50000);
+            socket = new Socket("172.30.13.200", 50000);
             oIn = new ObjectInputStream(socket.getInputStream());
             oOut = new ObjectOutputStream(socket.getOutputStream());
             oOut.flush();
             System.err.println("--------------STREAMS OPENED------------------------");
             clientId = oIn.readInt();
+            //Log.d("topic", "msg");
             System.err.println("--------------ClientId received------------------------");
-            if(true)
-                return;
-            while(!this.isInterrupted()){
+
+            while (!this.isInterrupted()) {
                 System.err.println("--------------starting wait------------------------");
-                socket.wait();
-                switch (state){
-                    case 0 : {//Create or join game
+                synchronized (socket) {
+                    socket.wait();
+                }
+                switch (state) {
+                    case 0: {//Create or join game
                         oOut.writeObject(transfer);
-                        if(transfer == Integer.valueOf(-1)){
+                        if (transfer == Integer.valueOf(-1)) {
                             gameId = oIn.readInt();
                             Thread.sleep(1000);
-                            socket.notify();
+                            synchronized (socket) {
+                                socket.notify(); // what tis for?
+                            }
                             state = 1;
-                        }else{
+                        } else {
                             boolean res = oIn.readBoolean();
-                            if(res){
+                            if (res) {
                                 gameId = (int) transfer;
                                 state = 2;
                                 Thread.sleep(1000);
-                                socket.notify();
+                                synchronized (socket) {
+                                    socket.notify();
+                                }
                             }
                         }
                         break;
                     }
-                    case 1 : {//start game
+                    case 1: {//start game
                         oOut.writeObject(transfer);
                         state = 2;
                         break;
                     }
-                    case 2 : {//get game obj from server
+                    case 2: {//get game obj from server
                         game = (Game) oIn.readObject();
                         playerEntityId = "player" + clientId;
                         state = 3;
@@ -63,6 +71,7 @@ public class ServerConnection extends Thread{
                 }
             }
         } catch (IOException | InterruptedException | ClassNotFoundException e) {
+
             throw new RuntimeException(e);
         }
 
