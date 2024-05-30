@@ -25,7 +25,7 @@ public class Tier1Wind2 extends Spell {
         Player p = e.getLinkedPlayer();
         if (getDistance(x, e.getX(), y, e.getY()) <= radius) {
             ArrayList<GameEntity> entitiesToPush = getCollidingEntities(fromX, fromY);
-            GameView.startAnimation(fromX, fromY, x, y, new Bitmap[]{icon}, false, entitiesToPush);
+            GameView.startAnimation(fromX, fromY, x, y, animationSprites, false, entitiesToPush);
             for (GameEntity en : entitiesToPush) {
                 en.setX(x);
                 en.setY(y);

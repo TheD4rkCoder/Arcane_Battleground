@@ -30,7 +30,13 @@ public class DefaultPlayerAction extends Action {
         tier1Spells[1] = new Tier1Wind();
         tier1Spells[2] = new Tier1Sprint();
         spells.add(tier1Spells);
-        for(int i = 1; i < 6; i++) {
+        Spell[] tier2Spells = new Spell[4];
+        tier2Spells[0] = new Tier2Fireball();
+        tier2Spells[1] = new Tier2WindBlade();
+        tier2Spells[2] = new Tier2RockThrow();
+        spells.add(tier2Spells);
+
+        for(int i = 2; i < 6; i++) {
             spells.add(new Spell[4]);
         }
 

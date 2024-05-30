@@ -5,6 +5,7 @@ import static com.example.arcanebattleground.GameView.getDistance;
 import android.graphics.Bitmap;
 
 import com.example.arcanebattleground.GameEntity;
+import com.example.arcanebattleground.GameView;
 import com.example.arcanebattleground.Player;
 
 public class PlayerRecoverySpell extends Spell {
@@ -12,6 +13,7 @@ public class PlayerRecoverySpell extends Spell {
     private int increaseMaxHealthAmount;
     private int increaseManaAmount;
     private int increaseMaxManaAmount;
+    private Bitmap[] meditationAnimation;
 
     public PlayerRecoverySpell(String name, int manaCost, int increaseHealthAmount, int increaseMaxHealthAmount, int increaseManaAmount, int increaseMaxManaAmount, Bitmap icon) {
         super(name, manaCost, 0, icon);
@@ -19,6 +21,14 @@ public class PlayerRecoverySpell extends Spell {
         this.increaseMaxHealthAmount = increaseMaxHealthAmount;
         this.increaseManaAmount = increaseManaAmount;
         this.increaseMaxManaAmount = increaseMaxManaAmount;
+
+        meditationAnimation = new Bitmap[5];
+        meditationAnimation[0] = GameView.meditationAnimationBitmap;
+        meditationAnimation[1] = Bitmap.createScaledBitmap(GameView.meditationAnimationBitmap, (int)(1.7*GameView.hexagonWidth), (int)(1.7*GameView.hexagonHeight), false);
+        meditationAnimation[2] = Bitmap.createScaledBitmap(GameView.meditationAnimationBitmap, (int)(1.4*GameView.hexagonWidth), (int)(1.4*GameView.hexagonHeight), false);
+        meditationAnimation[3] = Bitmap.createScaledBitmap(GameView.meditationAnimationBitmap, (int)(1.1*GameView.hexagonWidth), (int)(1.1*GameView.hexagonHeight), false);
+        meditationAnimation[4] = Bitmap.createScaledBitmap(GameView.meditationAnimationBitmap, (int)(0.9*GameView.hexagonWidth), (int)(0.9*GameView.hexagonHeight), false);
+
     }
 
     @Override
@@ -38,6 +48,7 @@ public class PlayerRecoverySpell extends Spell {
             if (p.getHealth() > p.getMaxHealth())
                 p.setHealth(p.getMaxHealth());
 
+            GameView.startAnimation(p.getX(), p.getY(), x, y, meditationAnimation, false);
             p.setRoundsCast(0);
             // still need to start animation
             return true;

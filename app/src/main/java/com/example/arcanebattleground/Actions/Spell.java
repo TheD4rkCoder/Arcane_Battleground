@@ -6,6 +6,7 @@ import static com.example.arcanebattleground.GameView.screenWidth;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 
 import com.example.arcanebattleground.GameEntity;
@@ -23,6 +24,12 @@ public abstract class Spell extends Action {
         this.name = name;
         this.manaCost = manaCost;
         this.radius = radius;
+        Matrix m = new Matrix();
+        animationSprites = new Bitmap[8];
+        for (int i = 0; i < 8; i++) {
+            animationSprites[i] = Bitmap.createBitmap(this.icon, 0, 0, this.icon.getWidth(), this.icon.getHeight(), m, false);
+            m.postRotate(-45);
+        }
     }
 
     @Override

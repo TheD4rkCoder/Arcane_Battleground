@@ -8,6 +8,7 @@ import static com.example.arcanebattleground.GameView.screenWidth;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 
 import com.example.arcanebattleground.GameEntity;
 import com.example.arcanebattleground.GameView;
@@ -17,11 +18,9 @@ import java.util.ArrayList;
 
 public class SimpleAttackSpell extends Spell {
     int damage;
-
     public SimpleAttackSpell(String name, int manaCost, int radius, int damage, Bitmap icon) {
-        super(name, manaCost, radius,icon);
+        super(name, manaCost, radius, icon);
         this.damage = damage;
-        // animationSprites =
     }
 
     @Override
@@ -35,7 +34,8 @@ public class SimpleAttackSpell extends Spell {
                 en.setHealth(en.getHealth() - damage);
             }
             p.setMana(p.getMana() - manaCost);
-            GameView.startAnimation(p.getX(), p.getY(), x, y, new Bitmap[]{icon}, false);
+            GameView.startAnimation(p.getX(), p.getY(), x, y, animationSprites, false);
+            p.setRoundsCast(0);
             return true;
         }
         return false;

@@ -21,7 +21,6 @@ import java.util.List;
 public class Tier1Wind extends Spell{
     public Tier1Wind() {
         super("Winds", 30, 2, GameView.windIconBitmap);
-        // animationSprites =
     }
     @Override
     public boolean boardTap(int x, int y, GameEntity e) {
@@ -31,7 +30,7 @@ public class Tier1Wind extends Spell{
         if (getDistance(x, e.getX(), y, e.getY()) <= radius) {
             GameView.currentAction = new Tier1Wind2(x, y, 2, manaCost);
 
-            GameView.startAnimation(p.getX(), p.getY(), x, y, new Bitmap[]{icon}, true);
+            GameView.startAnimation(p.getX(), p.getY(), x, y, animationSprites, true);
         }
         return false;
     }
