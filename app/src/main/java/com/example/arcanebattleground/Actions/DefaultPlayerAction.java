@@ -5,12 +5,15 @@ import static com.example.arcanebattleground.GameView.screenHeight;
 import static com.example.arcanebattleground.GameView.screenWidth;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 
 import com.example.arcanebattleground.GameEntity;
 import com.example.arcanebattleground.GameView;
 import com.example.arcanebattleground.Player;
+import com.example.arcanebattleground.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +37,16 @@ public class DefaultPlayerAction extends Action {
         Spell[] tier7Spells = new Spell[4];
         tier7Spells[0] = new Tier10GeneOptimization();
         spells.add(tier7Spells);
+
+
+
+        meditationAnimation = new Bitmap[5];
+        meditationAnimation[0] = GameView.meditationAnimationBitmap;
+        meditationAnimation[1] = Bitmap.createScaledBitmap(GameView.meditationAnimationBitmap, (int)(1.7*GameView.hexagonWidth), (int)(1.7*GameView.hexagonHeight), false);
+        meditationAnimation[2] = Bitmap.createScaledBitmap(GameView.meditationAnimationBitmap, (int)(1.4*GameView.hexagonWidth), (int)(1.4*GameView.hexagonHeight), false);
+        meditationAnimation[3] = Bitmap.createScaledBitmap(GameView.meditationAnimationBitmap, (int)(1.1*GameView.hexagonWidth), (int)(1.1*GameView.hexagonHeight), false);
+        meditationAnimation[4] = Bitmap.createScaledBitmap(GameView.meditationAnimationBitmap, (int)(0.9*GameView.hexagonWidth), (int)(0.9*GameView.hexagonHeight), false);
+
     }
 
     @Override
@@ -47,6 +60,7 @@ public class DefaultPlayerAction extends Action {
             p.setMana(mana);
             p.setRoundsCast(0);
             // still need to start meditationAnimation
+            GameView.startAnimation(p.getX(), p.getY(), x, y, meditationAnimation, false);
             return true;
         }
         if (getDistance(p.getX(), x, p.getY(), y) <= radius) {
@@ -98,9 +112,9 @@ public class DefaultPlayerAction extends Action {
             c.drawBitmap(spellsOfCurrentTier[i].icon, (0.02f + 0.245f * i) * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
             GameView.paintForBitmaps.setAlpha(255);
 
+            GameView.paintForTexts.setTextAlign(Paint.Align.RIGHT);
             GameView.paintForTexts.setColor(Color.parseColor("#30a2ff"));
             c.drawText("" + spellsOfCurrentTier[i].manaCost, (0.245f + 0.245f * i) * screenWidth, screenHeight - screenWidth*0.023f, GameView.paintForTexts);
-
         }
     }
 }

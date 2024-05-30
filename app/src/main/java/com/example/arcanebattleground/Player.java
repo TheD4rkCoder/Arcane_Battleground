@@ -3,6 +3,7 @@ package com.example.arcanebattleground;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 
 import com.example.arcanebattleground.Actions.Action;
 import com.example.arcanebattleground.Actions.DefaultPlayerAction;
@@ -39,10 +40,10 @@ public class Player extends GameEntity {
 
     @Override
     public void drawEntityDescription(Canvas c, float startY, float height) {
+        GameView.paintForTexts.setTextAlign(Paint.Align.RIGHT);
         GameView.paintForTexts.setColor(Color.RED);
         c.drawText("" + health + "/" + maxHealth, GameView.screenWidth * 0.35f, startY + GameView.paintForTexts.getTextSize() + GameView.screenWidth * 0.02f, GameView.paintForTexts);
         GameView.paintForTexts.setColor(Color.parseColor("#30a2ff"));
-
         c.drawText("" + mana + "/" + maxMana, GameView.screenWidth * 0.97f, startY + GameView.paintForTexts.getTextSize() + GameView.screenWidth * 0.02f, GameView.paintForTexts);
 
         if (mana < 10 || roundsCast >= maxRoundsCast)

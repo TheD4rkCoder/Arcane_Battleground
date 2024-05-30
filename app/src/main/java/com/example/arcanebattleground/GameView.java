@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap, tier1SprintSpellBitmap, tier10GeneOptimizationBitmap, spellSlotBitmap;
+    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap, tier1SprintSpellBitmap, tier10GeneOptimizationBitmap, spellSlotBitmap, meditationAnimationBitmap;
     public static float hexagonWidth, hexagonHeight;
     public static Paint paintForBitmaps, paintForTexts, paintForShapes;
     public static int screenHeight, screenWidth;
@@ -40,7 +40,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         screenWidth = getResources().getDisplayMetrics().widthPixels;
         screenHeight = getResources().getDisplayMetrics().heightPixels;
 
-        cancelBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cancel), (int) (screenWidth * 0.225), (int) (screenWidth * 0.225), false);
+        cancelBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cancel), 16, 16, false);
+        cancelBitmap = Bitmap.createScaledBitmap(cancelBitmap, (int) (screenWidth * 0.225), (int) (screenWidth * 0.225), false);
+
         windIconBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wind), (int) (screenWidth * 0.225), (int) (screenWidth * 0.225), false);
 
         // getting a .png from drawable folder:
@@ -56,6 +58,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         tier1SprintSpellBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.swiftness);
         tier10GeneOptimizationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gene_optimization);
         spellSlotBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.spell_slot), (int)(screenWidth*0.225), (int)(screenWidth*0.225), false);
+        meditationAnimationBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.mana_ring), (int)(2*hexagonWidth), (int)(2*hexagonHeight), false);
 
         entities.add(new Player(new Bitmap[]{
                 Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 32, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),

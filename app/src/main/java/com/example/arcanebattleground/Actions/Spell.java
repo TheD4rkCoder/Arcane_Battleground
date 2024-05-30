@@ -6,6 +6,7 @@ import static com.example.arcanebattleground.GameView.screenWidth;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 
 import com.example.arcanebattleground.GameEntity;
 import com.example.arcanebattleground.GameView;
@@ -36,5 +37,9 @@ public abstract class Spell extends Action {
         c.drawBitmap(icon, 0.02f * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
         c.drawRect(0.755f * screenWidth, startY + 0.02f * screenWidth, 0.98f * screenWidth, screenHeight - 0.02f * screenWidth, GameView.paintForShapes);
         c.drawBitmap(GameView.cancelBitmap, 0.755f * screenWidth, startY + 0.02f * screenWidth, GameView.paintForBitmaps);
+
+        GameView.paintForTexts.setTextAlign(Paint.Align.LEFT);
+        GameView.paintForTexts.setColor(Color.LTGRAY);
+        c.drawText("" +name, 0.27f  * screenWidth, startY + GameView.paintForTexts.getTextSize(), GameView.paintForTexts);
     }
 }
