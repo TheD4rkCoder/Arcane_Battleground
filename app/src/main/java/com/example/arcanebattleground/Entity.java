@@ -1,5 +1,7 @@
 package com.example.arcanebattleground;
 
+import androidx.annotation.Nullable;
+
 public class Entity {
     private int x;
     private int y;
@@ -13,5 +15,19 @@ public class Entity {
 
     public String getId() {
         return id;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        assert obj != null;
+        return ((Entity)obj).id.equals(this.id);
     }
 }

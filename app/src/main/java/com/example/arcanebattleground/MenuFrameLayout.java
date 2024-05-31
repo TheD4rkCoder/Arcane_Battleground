@@ -36,6 +36,6 @@ public class MenuFrameLayout extends FrameLayout {
         this.addView(containerLayout);
     }
     public void displayLobbyView(){
-        this.addView(new LobbyView(context));
+        this.addView(new LobbyView(context, mainMenu));
     }
 }

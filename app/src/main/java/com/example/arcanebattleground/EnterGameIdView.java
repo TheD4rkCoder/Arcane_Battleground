@@ -1,12 +1,13 @@
 package com.example.arcanebattleground;
 
 import android.content.Context;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.io.IOException;
 
 public class EnterGameIdView extends LinearLayout {
 
@@ -46,16 +47,30 @@ public class EnterGameIdView extends LinearLayout {
         button.setText("Join");
         button.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         button.setOnClickListener(view -> {
-            ServerConnection.transfer = editText.getText().toString();
-            synchronized (ServerConnection.socket) {
-                ServerConnection.socket.notify();
+            int gameId = Integer.parseInt(editText.getText().toString());
+            Thread t1 = new Thread(() -> {
+                try {
+                    ServerConnection.oOut.writeInt(gameId);
+                    ServerConnection.oOut.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            t1.start();
+            try {
+                t1.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            synchronized (ServerConnection.socket){
                 try {
                     ServerConnection.socket.wait();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
-            menuFrameLayout.displayLobbyView();
+            if(ServerConnection.gameId != -1)
+                menuFrameLayout.displayLobbyView();
         });
 
         // Add views to the layout

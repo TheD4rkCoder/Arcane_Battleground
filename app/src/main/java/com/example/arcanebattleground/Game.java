@@ -19,11 +19,26 @@ public class Game {
         gameEntities = new ArrayList<>();
     }
 
+    public ArrayList<Entity> getGameEntities() {
+        return gameEntities;
+    }
 
+    public void setGameEntities(ArrayList<Entity> gameEntities) {
+        this.gameEntities = gameEntities;
+    }
+
+    public ArrayList<PlayerInfo> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(ArrayList<PlayerInfo> players) {
+        this.players = players;
+    }
 
     @Override
     public boolean equals(Object obj) {
         return ((Game)obj).gameId == this.gameId;
     }
+
 }
 

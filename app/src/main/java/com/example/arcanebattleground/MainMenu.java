@@ -38,6 +38,7 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
         this.context = context;
         this.menuFrameLayout = menuFrameLayout;
         menuFrameLayout.setMainMenu(this);
+        ServerConnection.mainMenu = this;
     }
 
     public void drawMenu() {
@@ -81,6 +82,7 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+                ServerConnection.isHost = true;
                 menuFrameLayout.displayLobbyView();
             } else if (event.getY() > screenHeight * 0.6- paintForTexts.getTextSize() && event.getY() < screenHeight * 0.6) {
                 menuFrameLayout.displayInputLayout();
