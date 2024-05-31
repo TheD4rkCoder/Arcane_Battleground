@@ -15,6 +15,7 @@ public class PlayerRecoverySpell extends Spell {
     private int increaseMaxManaAmount;
     private Bitmap[] meditationAnimation;
 
+    // always heals linkedPlayer!
     public PlayerRecoverySpell(String name, int manaCost, int increaseHealthAmount, int increaseMaxHealthAmount, int increaseManaAmount, int increaseMaxManaAmount, Bitmap icon) {
         super(name, manaCost, 0, icon);
         this.increaseHealthAmount = increaseHealthAmount;
@@ -33,7 +34,7 @@ public class PlayerRecoverySpell extends Spell {
 
     @Override
     public boolean boardTap(int x, int y, GameEntity e) {
-        Player p = (Player) e;
+        Player p = e.getLinkedPlayer();
         if (getDistance(p.getX(), x, p.getY(), y) == 0 && p.getMana() >= manaCost) {
             p.setMaxMana(p.getMaxMana() + increaseMaxManaAmount);
             if (p.getMaxMana() > p.getStatCaps())

@@ -71,8 +71,9 @@ public class ServerConnection extends Thread {
                 }
             }
         } catch (IOException | InterruptedException | ClassNotFoundException e) {
-
-            throw new RuntimeException(e);
+            MainMenu.offline = true;
+            MainMenu.mainMenu.drawMenu();
+            //throw new RuntimeException(e);
         }
 
     }

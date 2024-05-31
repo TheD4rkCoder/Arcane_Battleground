@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap, tier1SprintSpellBitmap, tier10GeneOptimizationBitmap, spellSlotBitmap, meditationAnimationBitmap, lavapoolBitmap, windBladeBitmap, earthBitmap;
+    public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap, tier1SprintSpellBitmap, tier10GeneOptimizationBitmap, spellSlotBitmap, meditationAnimationBitmap, lavapoolBitmap, windBladeBitmap, earthBitmap, skeletonSkullSpriteSheet, skullBitmap;
     public static float hexagonWidth, hexagonHeight;
     public static Paint paintForBitmaps, paintForTexts, paintForShapes;
     public static int screenHeight, screenWidth;
@@ -32,6 +32,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private static Bitmap boardBitmap, lavaBackgroundBitmap, selectedEntityBitmap;
     private static final ArrayList<GameEntity> entities = new ArrayList<>();
     private static int currentEntitiesTurn = 0;
+
 
     public GameView(Context context) {
         super(context);
@@ -62,6 +63,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         lavapoolBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lavapool);
         windBladeBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.wind_blade);
         earthBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.earth);
+        skeletonSkullSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.skeleton_skull);
+        skullBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.skull);
 
         entities.add(new Player(new Bitmap[]{
                 Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 32, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
@@ -78,7 +81,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 129, 1, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false)
         }));
         entities.get(1).setY(1);
-        entities.get(0).setDefaultAction(new DefaultPlayerAction());
         currentAction = entities.get(currentEntitiesTurn).getDefaultAction();
 
         selectedEntityBitmap = Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.spellSpriteSheet, 277, 88, 61, 62), (int) (hexagonWidth * 0.9f), (int) (hexagonWidth * 0.9f), false);
@@ -116,7 +118,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         holder.addCallback(this);
 
     }
-
+    public static void addEntityToList(GameEntity e) {
+        entities.add(currentEntitiesTurn, e);
+        currentEntitiesTurn++;
+    }
     public static void endMove() {
         currentEntitiesTurn = (currentEntitiesTurn + 1) % entities.size();
         resetToDefaultAction();
