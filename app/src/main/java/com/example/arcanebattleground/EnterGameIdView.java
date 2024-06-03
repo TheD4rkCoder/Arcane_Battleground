@@ -19,13 +19,12 @@ public class EnterGameIdView extends LinearLayout {
 
     public EnterGameIdView(Context context, MenuFrameLayout menuFrameLayout) {
         super(context);
-        initializeViews(context);
-        this.menuFrameLayout = menuFrameLayout;
-    }
-
-    private void initializeViews(Context context) {
         // Set orientation to vertical for stacking elements
         setOrientation(LinearLayout.VERTICAL);
+        LinearLayout mainLayout = new LinearLayout(context);
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        mainLayout.setLayoutParams(params);
 
         // Create background view
         backgroundView = new View(context);
@@ -37,6 +36,7 @@ public class EnterGameIdView extends LinearLayout {
         textView = new TextView(context);
         textView.setText("Enter game id:");
         textView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        textView.setTextColor(getResources().getColor(android.R.color.holo_green_light, null));
 
         // Create EditText
         editText = new EditText(context);
@@ -74,12 +74,14 @@ public class EnterGameIdView extends LinearLayout {
         });
 
         // Add views to the layout
-        addView(backgroundView); // Add background view first
-        addView(textView);
-        addView(editText);
-        addView(button);
-    }
+        //mainLayout.addView(backgroundView); // Add background view first
+        mainLayout.addView(textView);
+        mainLayout.addView(editText);
+        mainLayout.addView(button);
+        this.menuFrameLayout = menuFrameLayout;
 
+        addView(mainLayout);
+    }
 
 }
 

@@ -83,6 +83,13 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
                     throw new RuntimeException(e);
                 }
                 ServerConnection.isHost = true;
+                synchronized (ServerConnection.socket){
+                    try {
+                        ServerConnection.socket.wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 menuFrameLayout.displayLobbyView();
             } else if (event.getY() > screenHeight * 0.6- paintForTexts.getTextSize() && event.getY() < screenHeight * 0.6) {
                 menuFrameLayout.displayInputLayout();

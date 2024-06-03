@@ -16,9 +16,13 @@ import androidx.annotation.NonNull;
 import com.example.arcanebattleground.Actions.Action;
 import com.example.arcanebattleground.Actions.DefaultPlayerAction;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import shared.Entity;
+import shared.PlayerInfo;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public static Bitmap oldSpriteSheet, spellSpriteSheet, cancelBitmap, windIconBitmap, tier1SprintSpellBitmap, tier10GeneOptimizationBitmap, spellSlotBitmap, meditationAnimationBitmap, lavapoolBitmap, windBladeBitmap, earthBitmap;
@@ -98,8 +102,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 129, 1, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false)
                     }));
                 }
-                entities.get(entities.size() - 1).setX(e.getX());
-                entities.get(entities.size() - 1).setY(e.getY());
+                entities.get(entities.size() - 1).setX((int) e.getX());
+                entities.get(entities.size() - 1).setY((int) e.getY());
                 entities.get(entities.size() - 1).setDefaultAction(new DefaultPlayerAction());
             }
         }
@@ -254,6 +258,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if(!ServerConnection.offline && currentEntitiesTurn != ServerConnection.ownIndex)
             return true;
         if (event.getAction() == MotionEvent.ACTION_UP) { // MotionEvent has all the possible actions (if you need it to be only on drag or smth)
+            new Thread(() -> {
+                try {
+                    ServerConnection.oOut.writeObject(new Entity(event.getX() / screenWidth, event.getY() / screenHeight, ServerConnection.playerEntityId));
+                    ServerConnection.oOut.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
             handleTouchEvent(event.getX(), event.getY());
         }
         return true; // touch already handled (for event bubbling)
@@ -261,6 +273,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public static void handleTouchEvent(float x, float y){
         if (Animation.isAnimationPlaying())
             return;
+        if(!ServerConnection.offline && currentEntitiesTurn != ServerConnection.ownIndex){
+            x = x*screenWidth;
+            y = y*screenHeight;
+        }
         boolean endMove = false;
         if (y < boardBitmap.getHeight()) {
             int fieldY = (int) ((y - 0.15f * hexagonHeight) / hexagonHeight);

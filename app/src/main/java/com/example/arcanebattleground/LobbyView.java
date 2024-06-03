@@ -60,14 +60,6 @@ public class LobbyView extends LinearLayout {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                synchronized (ServerConnection.socket){
-                    try {
-                        ServerConnection.socket.wait();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                mainMenu.startGame();
             });
             Button cancelButton = new Button(context);
             cancelButton.setText("Cancel");

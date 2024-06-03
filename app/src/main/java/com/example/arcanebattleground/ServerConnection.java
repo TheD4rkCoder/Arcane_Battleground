@@ -6,6 +6,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Objects;
 
+import shared.Entity;
+import shared.Game;
+
 public class ServerConnection extends Thread {
     public static ObjectOutputStream oOut;
     public static ObjectInputStream oIn;
@@ -19,12 +22,14 @@ public class ServerConnection extends Thread {
     public static boolean isHost = false;
     public static MainMenu mainMenu = null;
     public static int ownIndex;
-    public static boolean offline = false;
+    public static boolean offline = true;
 
     @Override
     public void run() {
         try {
-            socket = new Socket("10.171.155.39", 50000);
+            socket = new Socket("10.11.12.111", 50000);
+            offline = false;
+            System.err.println("------------------Server connection established-------------------------");
             oIn = new ObjectInputStream(socket.getInputStream());
             oOut = new ObjectOutputStream(socket.getOutputStream());
             oOut.flush();
@@ -33,20 +38,22 @@ public class ServerConnection extends Thread {
 
             while (!this.isInterrupted()) {
                 Object obj = oIn.readObject();
-                if(obj instanceof Integer){
+                if (obj instanceof Integer) {
                     gameId = (int) obj;
-                }else if(obj instanceof Boolean){
-                    boolean res = (boolean) obj;
-                    if(!res)
-                        gameId = -1;
-                    synchronized (socket){
+                    synchronized (socket) {
                         socket.notify();
                     }
+                } else if (obj instanceof Boolean) {
+                    boolean res = (boolean) obj;
+                    if (!res)
+                        gameId = -1;
+                    synchronized (socket) {
+                        socket.notify();
+                    }
+                }else if(obj instanceof String){
+                    System.out.println("String");
                 }else if (obj instanceof Game){
                     game = (Game) obj;
-                    synchronized (socket){
-                        socket.notify();
-                    }
                     mainMenu.startGame();
                 }else if(obj instanceof Entity){
                     Entity e = (Entity) obj;
