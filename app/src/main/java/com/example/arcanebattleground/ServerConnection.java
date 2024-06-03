@@ -100,8 +100,8 @@ public class ServerConnection extends Thread {
                     }
                 }//*/
             }
-        } catch (IOException | InterruptedException | ClassNotFoundException e) {
-            MainMenu.offline = true;
+        } catch (IOException | ClassNotFoundException e) {
+            offline = true;
             MainMenu.mainMenu.drawMenu();
             //throw new RuntimeException(e);
         }

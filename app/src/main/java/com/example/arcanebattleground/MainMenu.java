@@ -23,7 +23,6 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
     private Context context;
     private MenuFrameLayout menuFrameLayout;
     private Bitmap background;
-    public static boolean offline = false;
     public static MainMenu mainMenu;
 
     public MainMenu(Context context, MenuFrameLayout menuFrameLayout) {
@@ -57,12 +56,12 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
         c.drawBitmap(background, 0, 0, null);
 
         // TODO: field for entering id, ect
-        if (offline)
+        if (ServerConnection.offline)
             paintForTexts.setColor(Color.WHITE);
 
         c.drawText("Offline Play", screenWidth * 0.5f, screenHeight * 0.2f, paintForTexts);
 
-        if (offline)
+        if (ServerConnection.offline)
             paintForTexts.setColor(Color.GRAY);
         c.drawText("Create lobby", screenWidth * 0.5f, screenHeight * 0.4f, paintForTexts);
 
