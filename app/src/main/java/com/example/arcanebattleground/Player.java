@@ -7,6 +7,7 @@ import android.graphics.Paint;
 
 import com.example.arcanebattleground.Actions.Action;
 import com.example.arcanebattleground.Actions.DefaultPlayerAction;
+import com.example.arcanebattleground.Actions.DefaultSkeletonAction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,16 +18,13 @@ public class Player extends GameEntity {
     public static Bitmap castButtonBitmap;
     public static Bitmap castAnimation[];
     private final int statCaps = 999;
-    private static Action defaultAction;
     private int mana = 50;
     private int maxMana = 100;
     private final int maxRoundsCast = 6;
     private int roundsCast = 0;
 
     public Player(Bitmap[] sprites) {
-        super(sprites);
-        setMaxHealth(100);
-        setHealth(100);
+        super(sprites, 100, new DefaultPlayerAction());
         setLinkedPlayer(this);
     }
 
@@ -65,15 +63,6 @@ public class Player extends GameEntity {
         return true;
     }
 
-    @Override
-    public Action getDefaultAction() {
-        return defaultAction;
-    }
-
-    @Override
-    public void setDefaultAction(Action action) {
-        defaultAction = action;
-    }
 
     public int getMana() {
         return mana;
