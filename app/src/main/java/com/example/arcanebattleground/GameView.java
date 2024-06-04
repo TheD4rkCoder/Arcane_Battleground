@@ -76,7 +76,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 65, 33, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 98, 34, 28, 28), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 129, 33, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false)
-            }));
+            }, null));
             entities.get(0).setY(11);
             entities.get(0).setX(4);
             entities.add(new Player(new Bitmap[]{
@@ -84,7 +84,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 65, 1, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 98, 2, 28, 28), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 129, 1, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false)
-            }));
+            }, null));
             entities.get(1).setY(1);
             entities.get(0).setDefaultAction(new DefaultPlayerAction());
         }else{
@@ -96,15 +96,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 65, 33, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 98, 34, 28, 28), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 129, 33, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false)
-                    }));
-                    ServerConnection.ownIndex = entities.size() - 1;
+                    }, pI));
                 }else{
                     entities.add(new Player(new Bitmap[]{
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 0, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 65, 1, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 98, 2, 28, 28), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 129, 1, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false)
-                    }));
+                    }, pI));
                 }
                 entities.get(entities.size() - 1).setX((int) e.getX());
                 entities.get(entities.size() - 1).setY((int) e.getY());
@@ -262,7 +261,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(!ServerConnection.offline && currentEntitiesTurn != ServerConnection.ownIndex)
+        if(!ServerConnection.offline && entities.get(currentEntitiesTurn).getLinkedPlayer().getPlayerInfo().getId() != ServerConnection.clientId)
             return true;
         if (event.getAction() == MotionEvent.ACTION_UP) { // MotionEvent has all the possible actions (if you need it to be only on drag or smth)
             new Thread(() -> {
