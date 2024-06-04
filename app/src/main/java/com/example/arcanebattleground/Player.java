@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import shared.PlayerInfo;
+
 public class Player extends GameEntity {
     public static Bitmap castIndicatorBitmap;
     public static Bitmap castButtonBitmap;
@@ -22,10 +24,16 @@ public class Player extends GameEntity {
     private int maxMana = 100;
     private final int maxRoundsCast = 6;
     private int roundsCast = 0;
+    private PlayerInfo playerInfo;
 
-    public Player(Bitmap[] sprites) {
+    public PlayerInfo getPlayerInfo() {
+        return playerInfo;
+    }
+
+    public Player(Bitmap[] sprites, PlayerInfo playerInfo) {
         super(sprites, 100, new DefaultPlayerAction());
         setLinkedPlayer(this);
+        this.playerInfo = playerInfo;
     }
 
     @Override

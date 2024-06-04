@@ -1,11 +1,13 @@
 package com.example.arcanebattleground;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Objects;
+
+import shared.Entity;
+import shared.Game;
 
 public class ServerConnection extends Thread {
     public static ObjectOutputStream oOut;
@@ -17,21 +19,49 @@ public class ServerConnection extends Thread {
     private static int state = 0;
     public static int gameId = -1;
     public static Game game;
+    public static boolean isHost = false;
+    public static MainMenu mainMenu = null;
+    public static int ownIndex;
+    public static boolean offline = true;
 
     @Override
     public void run() {
         try {
-            socket = new Socket("172.30.13.200", 50000);
+            socket = new Socket("10.11.12.111", 50000);
+            offline = false;
+            System.err.println("------------------Server connection established-------------------------");
             oIn = new ObjectInputStream(socket.getInputStream());
             oOut = new ObjectOutputStream(socket.getOutputStream());
             oOut.flush();
-            System.err.println("--------------STREAMS OPENED------------------------");
             clientId = oIn.readInt();
-            //Log.d("topic", "msg");
-            System.err.println("--------------ClientId received------------------------");
+            playerEntityId = "player" + clientId;
 
             while (!this.isInterrupted()) {
-                System.err.println("--------------starting wait------------------------");
+                Object obj = oIn.readObject();
+                if (obj instanceof Integer) {
+                    gameId = (int) obj;
+                    synchronized (socket) {
+                        socket.notify();
+                    }
+                } else if (obj instanceof Boolean) {
+                    boolean res = (boolean) obj;
+                    if (!res)
+                        gameId = -1;
+                    synchronized (socket) {
+                        socket.notify();
+                    }
+                }else if(obj instanceof String){
+                    System.out.println("String");
+                }else if (obj instanceof Game){
+                    game = (Game) obj;
+                    mainMenu.startGame();
+                }else if(obj instanceof Entity){
+                    Entity e = (Entity) obj;
+                    if(!Objects.equals(e.getId(), playerEntityId)){
+                        GameView.handleTouchEvent(e.getX(), e.getY());
+                    }
+                }
+                /*
                 synchronized (socket) {
                     socket.wait();
                 }
@@ -68,10 +98,10 @@ public class ServerConnection extends Thread {
                         playerEntityId = "player" + clientId;
                         state = 3;
                     }
-                }
+                }//*/
             }
-        } catch (IOException | InterruptedException | ClassNotFoundException e) {
-            MainMenu.offline = true;
+        } catch (IOException | ClassNotFoundException e) {
+            offline = true;
             MainMenu.mainMenu.drawMenu();
             //throw new RuntimeException(e);
         }

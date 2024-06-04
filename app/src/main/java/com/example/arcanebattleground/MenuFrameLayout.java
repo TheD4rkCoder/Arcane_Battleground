@@ -19,7 +19,9 @@ public class MenuFrameLayout extends FrameLayout {
     public MenuFrameLayout(@NonNull Context context) {
         super(context);
         this.addView(new MainMenu(context, this));
-
+        this.context = context;
+    }
+    public void displayInputLayout(){
         LinearLayout containerLayout = new LinearLayout(context);
         containerLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
@@ -27,15 +29,10 @@ public class MenuFrameLayout extends FrameLayout {
         EnterGameIdView inputLayout = new EnterGameIdView(context, this);
         containerLayout.addView(inputLayout);
         containerLayout.setGravity(Gravity.CENTER);
-
-        this.containerLayout = containerLayout;
-        this.context = context;
-    }
-    public void displayInputLayout(){
         // Add the containerLayout with centered content to the FrameLayout
-        this.addView(containerLayout);
+        this.addView(new EnterGameIdView(context, this));
     }
     public void displayLobbyView(){
-        this.addView(new LobbyView(context));
+        this.addView(new LobbyView(context, mainMenu));
     }
 }

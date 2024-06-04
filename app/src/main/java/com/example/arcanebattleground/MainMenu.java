@@ -23,7 +23,6 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
     private Context context;
     private MenuFrameLayout menuFrameLayout;
     private Bitmap background;
-    public static boolean offline = false;
     public static MainMenu mainMenu;
 
     public MainMenu(Context context, MenuFrameLayout menuFrameLayout) {
@@ -48,6 +47,7 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
         this.context = context;
         this.menuFrameLayout = menuFrameLayout;
         menuFrameLayout.setMainMenu(this);
+        ServerConnection.mainMenu = this;
     }
 
     public void drawMenu() {
@@ -56,12 +56,12 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
         c.drawBitmap(background, 0, 0, null);
 
         // TODO: field for entering id, ect
-        if (offline)
+        if (ServerConnection.offline)
             paintForTexts.setColor(Color.WHITE);
 
         c.drawText("Offline Play", screenWidth * 0.5f, screenHeight * 0.2f, paintForTexts);
 
-        if (offline)
+        if (ServerConnection.offline)
             paintForTexts.setColor(Color.GRAY);
         c.drawText("Create lobby", screenWidth * 0.5f, screenHeight * 0.4f, paintForTexts);
 
@@ -94,6 +94,14 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
                     t1.join();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
+                }
+                ServerConnection.isHost = true;
+                synchronized (ServerConnection.socket){
+                    try {
+                        ServerConnection.socket.wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 menuFrameLayout.displayLobbyView();
             } else if (event.getY() > screenHeight * 0.6 - paintForTexts.getTextSize() && event.getY() < screenHeight * 0.6) {
