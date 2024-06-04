@@ -1,5 +1,7 @@
 package com.example.arcanebattleground;
 
+import static com.example.arcanebattleground.ServerConnection.offline;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -70,7 +72,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         skeletonSkullSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.skeleton_skull);
         skullBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.skull);
 
-        if(ServerConnection.offline){
+        if(offline){
             entities.add(new Player(new Bitmap[]{
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 32, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 65, 33, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
@@ -261,17 +263,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(!ServerConnection.offline && entities.get(currentEntitiesTurn).getLinkedPlayer().getPlayerInfo().getId() != ServerConnection.clientId)
+        if(!offline && entities.get(currentEntitiesTurn).getLinkedPlayer().getPlayerInfo().getId() != ServerConnection.clientId)
             return true;
         if (event.getAction() == MotionEvent.ACTION_UP) { // MotionEvent has all the possible actions (if you need it to be only on drag or smth)
-            new Thread(() -> {
-                try {
-                    ServerConnection.oOut.writeObject(new Entity(event.getX() / screenWidth, event.getY() / screenHeight, ServerConnection.playerEntityId));
-                    ServerConnection.oOut.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
+            if(!offline)
+                new Thread(() -> {
+                    try {
+                        ServerConnection.oOut.writeObject(new Entity(event.getX() / screenWidth, event.getY() / screenHeight, ServerConnection.playerEntityId));
+                        ServerConnection.oOut.flush();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
             handleTouchEvent(event.getX(), event.getY());
         }
         return true; // touch already handled (for event bubbling)
