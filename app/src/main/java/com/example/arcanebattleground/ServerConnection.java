@@ -27,7 +27,7 @@ public class ServerConnection extends Thread {
     @Override
     public void run() {
         try {
-            socket = new Socket("10.11.12.111", 50000);
+            socket = new Socket("10.171.152.249", 50000);
             offline = false;
             System.err.println("------------------Server connection established-------------------------");
             oIn = new ObjectInputStream(socket.getInputStream());
@@ -58,7 +58,7 @@ public class ServerConnection extends Thread {
                 }else if(obj instanceof Entity){
                     Entity e = (Entity) obj;
                     if(!Objects.equals(e.getId(), playerEntityId)){
-                        GameView.handleTouchEvent(e.getX(), e.getY());
+                        GameView.handleTouchEvent(e.getX() * GameView.screenWidth, e.getY() * GameView.screenHeight);
                     }
                 }
                 /*

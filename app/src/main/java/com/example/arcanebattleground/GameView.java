@@ -279,10 +279,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public static void handleTouchEvent(float x, float y){
         if (Animation.isAnimationPlaying())
             return;
-        if(!ServerConnection.offline && currentEntitiesTurn != ServerConnection.ownIndex){
-            x = x*screenWidth;
-            y = y*screenHeight;
-        }
         boolean endMove = false;
         if (y < boardBitmap.getHeight()) {
             int fieldY = (int) ((y - 0.15f * hexagonHeight) / hexagonHeight);
