@@ -80,7 +80,7 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
                     Intent intent = new Intent(MainActivity.mainActivity, GameActivity.class);
                     MainActivity.mainActivity.startActivity(intent);
                 }).start();
-            } else if (event.getY() > screenHeight * 0.4 - paintForTexts.getTextSize() && event.getY() < screenHeight * 0.4) {
+            } else if (event.getY() > screenHeight * 0.4 - paintForTexts.getTextSize() && event.getY() < screenHeight * 0.4 && !ServerConnection.offline) {
                 Thread t1 = new Thread(() -> {
                     try {
                         ServerConnection.oOut.writeInt(-1);
@@ -104,7 +104,7 @@ public class MainMenu extends SurfaceView implements SurfaceHolder.Callback {
                     }
                 }
                 menuFrameLayout.displayLobbyView();
-            } else if (event.getY() > screenHeight * 0.6 - paintForTexts.getTextSize() && event.getY() < screenHeight * 0.6) {
+            } else if (event.getY() > screenHeight * 0.6 - paintForTexts.getTextSize() && event.getY() < screenHeight * 0.6 && !ServerConnection.offline) {
                 menuFrameLayout.displayInputLayout();
             }
         }

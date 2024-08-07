@@ -70,7 +70,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         skeletonSkullSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.skeleton_skull);
         skullBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.skull);
 
-        if(ServerConnection.offline){
+        if (ServerConnection.offline) {
             entities.add(new Player(new Bitmap[]{
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 32, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                     Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 65, 33, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
@@ -87,17 +87,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             }, null));
             entities.get(1).setY(1);
             entities.get(0).setDefaultAction(new DefaultPlayerAction());
-        }else{
-            for (PlayerInfo pI: ServerConnection.game.getPlayers()) {
+        } else {
+            for (PlayerInfo pI : ServerConnection.game.getPlayers()) {
                 Entity e = ServerConnection.game.getGameEntities().get(ServerConnection.game.getGameEntities().indexOf(new Entity(0, 0, "player" + pI.getId())));
-                if(ServerConnection.clientId == pI.getId()){
+                if (ServerConnection.clientId == pI.getId()) {
                     entities.add(new Player(new Bitmap[]{
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 32, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 65, 33, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 98, 34, 28, 28), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 129, 33, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false)
                     }, pI));
-                }else{
+                } else {
                     entities.add(new Player(new Bitmap[]{
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 32, 0, 32, 32), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
                             Bitmap.createScaledBitmap(Bitmap.createBitmap(GameView.oldSpriteSheet, 65, 1, 30, 30), (int) (hexagonWidth * 0.7f), (int) (hexagonWidth * 0.7f), false),
@@ -110,7 +110,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 entities.get(entities.size() - 1).setDefaultAction(new DefaultPlayerAction());
             }
         }
-
 
 
         currentAction = entities.get(currentEntitiesTurn).getDefaultAction();
@@ -150,10 +149,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         holder.addCallback(this);
 
     }
+
     public static void addEntityToList(GameEntity e) {
         entities.add(currentEntitiesTurn, e);
         currentEntitiesTurn++;
     }
+
     public static void endMove() {
         currentEntitiesTurn = (currentEntitiesTurn + 1) % entities.size();
         resetToDefaultAction();
@@ -261,27 +262,29 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(!ServerConnection.offline && entities.get(currentEntitiesTurn).getLinkedPlayer().getPlayerInfo().getId() != ServerConnection.clientId)
+        if (!ServerConnection.offline && entities.get(currentEntitiesTurn).getLinkedPlayer().getPlayerInfo().getId() != ServerConnection.clientId)
             return true;
         if (event.getAction() == MotionEvent.ACTION_UP) { // MotionEvent has all the possible actions (if you need it to be only on drag or smth)
-            new Thread(() -> {
-                try {
-                    ServerConnection.oOut.writeObject(new Entity(event.getX() / screenWidth, event.getY() / screenHeight, ServerConnection.playerEntityId));
-                    ServerConnection.oOut.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
+            if (!ServerConnection.offline)
+                new Thread(() -> {
+                    try {
+                        ServerConnection.oOut.writeObject(new Entity(event.getX() / screenWidth, event.getY() / screenHeight, ServerConnection.playerEntityId));
+                        ServerConnection.oOut.flush();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
             handleTouchEvent(event.getX(), event.getY());
         }
         return true; // touch already handled (for event bubbling)
     }
-    public static void handleTouchEvent(float x, float y){
+
+    public static void handleTouchEvent(float x, float y) {
         if (Animation.isAnimationPlaying())
             return;
-        if(!ServerConnection.offline && currentEntitiesTurn != ServerConnection.ownIndex){
-            x = x*screenWidth;
-            y = y*screenHeight;
+        if (!ServerConnection.offline && currentEntitiesTurn != ServerConnection.ownIndex) {
+            x = x * screenWidth;
+            y = y * screenHeight;
         }
         boolean endMove = false;
         if (y < boardBitmap.getHeight()) {
