@@ -29,6 +29,7 @@ public class ServerConnection extends Thread {
         try {
             socket = new Socket("10.171.152.249", 50000);
             offline = false;
+            mainMenu.drawMenu();
             System.err.println("------------------Server connection established-------------------------");
             oIn = new ObjectInputStream(socket.getInputStream());
             oOut = new ObjectOutputStream(socket.getOutputStream());
@@ -101,8 +102,6 @@ public class ServerConnection extends Thread {
                 }//*/
             }
         } catch (IOException | ClassNotFoundException e) {
-            offline = true;
-            MainMenu.mainMenu.drawMenu();
             //throw new RuntimeException(e);
         }
 
